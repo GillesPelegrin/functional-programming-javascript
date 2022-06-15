@@ -10,3 +10,14 @@ Goals:
     - 2.4 updating deeply nested types ( Lenses ? )
     - 2.5 Creating abstraction
 3. Understand if javascript is easier to write in a functional or a OOP way - easier refers to less overhead
+
+
+Answers:
+
+How to do:
+
+Encapsulation: Module pattern - Each function you expose outside of the module you can see as a public method,
+                                 the rest are privates because only the funcions inside of the module can reach them.
+
+Classes: Factories and closure - When exposing a functions with functions and variabels, through the closjure scope every function inside the top function                                     can reach these "private" variabels. You really have a stated functions. Can we created a forced constructor
+                                    inside this ?
