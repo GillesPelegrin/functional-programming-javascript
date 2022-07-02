@@ -2,10 +2,14 @@ class Animal {
 
     #name;
     #sound;
+    #nameOfThereFriends;
 
-    constructor(name, sound) {
+    constructor(name, sound, nameOfThereFriends) {
         this.#name = name;
         this.#sound = sound;
+        this.#nameOfThereFriends = [...nameOfThereFriends];
+        nameOfThereFriends[0] = 6
+
 
         this.#validation();
 
@@ -25,9 +29,17 @@ class Animal {
     changeSound(sound) {
         this.#sound = sound
     }
+
+    getNameOfThereFriends() {
+        return this.#nameOfThereFriends
+    }
+
+    changeNameOfThereFriends(newListOfFriendNames) {
+        this.#nameOfThereFriends = newListOfFriendNames
+    }
 }
 
-function createAnimal(name, sound) {
+function createAnimal(name, sound, nameOfThereFriends) {
 
     (function validation() {
         if (!sound) {
@@ -43,14 +55,24 @@ function createAnimal(name, sound) {
         sound = newSound;
     }
 
-    return Object.freeze({ getSound, changeSound })
+    function getNameOfThereFriends() {
+        return nameOfThereFriends;
+    }
+
+    function changeNameOfThereFriends(newListOfFriendNames) {
+        nameOfThereFriends = newListOfFriendNames;
+    }
+
+    return Object.freeze({ getSound, changeSound, getNameOfThereFriends, changeNameOfThereFriends })
 }
 
 let dogSound = "Woef"
 let catSound = "Miauw"
+let dogFriends = ['Sam', 'Aagje', 'Nina']
+let catFriends = ['Sam', 'Aagje', 'Nina']
 
-dog = new Animal("Dog", dogSound);
-cat = createAnimal("Cat", catSound);
+dog = new Animal("Dog", dogSound, dogFriends);
+cat = createAnimal("Cat", catSound, catFriends);
 
 
 console.log(dog['#sound'] ? '[ x ]' : '[ ✓ ]', 'class: privates fields should not be reachable: ', dog['#sound'])
@@ -67,12 +89,23 @@ console.log(dog['testValue'] ? '[ x ]' : '[ ✓ ]', 'class: should not add a new
 console.log(cat['testValue'] ? '[ x ]' : '[ ✓ ]', 'factory function: should not add a new value is been freezed', cat.testValue)
 console.log('\n')
 
+
+// This test would fail if it was not a primitive type, if it was an object or array this woul fail
 dog.changeSound('newSound');
 cat.changeSound('newSound');
-console.log(dog.getSound() === 'newSound' ? '[ ✓ ]' : '[ x ]', 'class: should change private field by public function', dog.getSound())
-console.log(cat.getSound() === 'newSound' ? '[ ✓ ]' : '[ x ]', 'factory function: should change private field by public function', cat.getSound())
+console.log(dog.getSound() === 'newSound' ? '[ ✓ ]' : '[ x ]', 'class: should change private primitive field by public function', dog.getSound())
+console.log(cat.getSound() === 'newSound' ? '[ ✓ ]' : '[ x ]', 'factory function: should change private primitive field by public function', cat.getSound())
 console.log(dogSound === 'Woef' ? '[ ✓ ]' : '[ x ]', 'class: should not change input variabels of constructor', dogSound)
 console.log(catSound === 'Miauw' ? '[ ✓ ]' : '[ x ]', 'factory function: should not change input arguments', catSound)
+console.log('\n')
+
+// Same test as above without a primitive but an array wich is an object
+dog.changeNameOfThereFriends(['newFriend']);
+cat.changeNameOfThereFriends(['newFriend']);
+console.log(JSON.stringify(dog.getNameOfThereFriends()) === JSON.stringify(['newFriend']) ? '[ ✓ ]' : '[ x ]', 'class: should change private field by public function', dog.getNameOfThereFriends())
+console.log(JSON.stringify(cat.getNameOfThereFriends()) === JSON.stringify(['newFriend']) ? '[ ✓ ]' : '[ x ]', 'factory function: should change private field by public function', cat.getNameOfThereFriends())
+console.log(JSON.stringify(dogFriends) === JSON.stringify(['Sam', 'Aagje', 'Nina']) ? '[ ✓ ]' : '[ x ]', 'class: should not change input variabels of constructor', dogFriends)
+console.log(JSON.stringify(catFriends) === JSON.stringify(['Sam', 'Aagje', 'Nina']) ? '[ ✓ ]' : '[ x ]', 'factory function: should not change input arguments', catFriends)
 console.log('\n')
 
 try {
@@ -89,3 +122,5 @@ try {
     console.log('[ ✓ ] factory function: should throw Error when the validation is not correct')
 }
 
+
+// Stil need to find out how to protect against adjusting the the argument so that a class or function can not adjust the outside world
