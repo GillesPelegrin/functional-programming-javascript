@@ -9,7 +9,8 @@ Goals:
     - 2.3 validations across aggregates in a way without to mutch overhead ( like a seperate Domain and ORM model + mappers )
     - 2.4 updating deeply nested types ( Lenses ? )
     - 2.5 Creating abstraction
-3. Understand if javascript is easier to write in a functional or a OOP way - easier refers to less overhead
+3. Understand if write javascript is easier to in a functional or a OOP way - easier refers to less overhead
+4. Implemented basic structures
 
 
 Answers:

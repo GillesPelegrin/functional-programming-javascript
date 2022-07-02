@@ -1,29 +1,8 @@
-
-/*
-Criteria:
-
-Should only call model function (findAll, delete, update) when the repository is defined by using the of function
-    this should add the baseRepospitory which is the implementation of library that been used.
-
-"add(fn)" should a function to itself, you can call it as much as you want
-     Repository.add().add().add().add() ... only when the repo is not declared (used by of) this will make it that the defintion stays in one file.
-    
-"Repository.transactionCOnotext" should create a context where everything is inside of the transaction
-
-
-Repository has the responsibility for creating specificRepositories, to add extra functions which are not introduced by the baseRepository 
-and add a generic transactionalContext which makes for sure everything should is in the same transactional.
-*/
-
-
-// Some kind of interface
-const baseRepository = (function () {
-
-    /*  Can you reach the model in here ? */
+const baseRepository = function (model) {
 
     function findAll() {
         /* Implement me */
-        return Promise.reject(new Error('findAll is not implemented'))
+        throw new Error('findAll is not implemented')
     }
 
     function getById() {
@@ -32,7 +11,7 @@ const baseRepository = (function () {
     }
 
     function update() {
-         /* Implement me */
+        /* Implement me */
         return Promise.reject(new Error('update is not implemented'))
     }
 
@@ -42,49 +21,21 @@ const baseRepository = (function () {
     }
 
     return { findAll, getById, update, deleteById }
-})()
+}
+
+function createRepository(model, ...fns) {
+    return Object.freeze({ ...baseRepository(model),
+         ...fns.reduce((a, fn) => ({ ...a, ...{ [fn.name]: fn(model) } }), {}) })
+}
 
 
-const Repository = (function () {
+const test1 = model => () => console.log('[ ✓ ] Test1 function is added as a function and can reach the model', model)
+const repo = createRepository({ model: 'modelTest' }, test1)
 
-        /* model should be private */
+console.log('\n')
+console.log('[ ✓ ] Model is not reachable', repo.model)
+try { repo.findAll() } catch { console.log('[ ✓ ] FindAll is a function in the repo') }
+repo.test1()
 
-    function of(model) {
-
-        /* you can only call the methods when you added your model */ 
-          const newRepository = Object.assign({}, Repository, baseRepository);
-          newRepository.model = model;
-          return newRepository;
-    }
-
-    function add(fn) {
-
-        const banaan = 5;
-        const a =  Object.assign({}, {fn});
-        return a;
-    }
-
-    return {of, add}
-})()
-
-const modelRepo = Repository.of({}).
-
-
-
-
-
-
-
-/* 
-Psuedo code
-
-cosnt modelRepository = Repostiory.of(model)
-
-Repository.transactionContext( () => {
- const model =  modelRepository.getById()
- modelRepository.update({})
-})
-
-
-*/
-
+repo.testValue = 5
+console.log('[ ✓ ] Repo is been freezed, testValue is not been set', repo.testValue)
