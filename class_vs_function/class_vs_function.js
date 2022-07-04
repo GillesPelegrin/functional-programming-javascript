@@ -7,10 +7,12 @@ class Animal {
     constructor(name, sound, nameOfThereFriends) {
         this.#name = name;
         this.#sound = sound;
-        this.#nameOfThereFriends = [...nameOfThereFriends];
-        nameOfThereFriends[0] = 6
+        this.#nameOfThereFriends = nameOfThereFriends;
 
-
+        // You wil adapt this and the reference outside this functions, which is not save ! for both cases
+        // Solution for case 2 would be deep copying the variable which comes in like this.#nameOfThereFriends = [...nameOfThereFriends];
+        // Case1: nameOfThereFriends[0] = 6
+        // Case2: this.#nameOfThereFriends[0] = 6
         this.#validation();
 
         Object.freeze(this);
@@ -41,6 +43,9 @@ class Animal {
 
 function createAnimal(name, sound, nameOfThereFriends) {
 
+    // You wil adapt this and the reference outside this functions, which is not save !
+    // nameOfThereFriends[0] = 6;
+
     (function validation() {
         if (!sound) {
             throw new Error('Sound should be defined')
@@ -60,6 +65,8 @@ function createAnimal(name, sound, nameOfThereFriends) {
     }
 
     function changeNameOfThereFriends(newListOfFriendNames) {
+        // Because we did not reasign the nameOfThereFriends it will also adapt the argument which is given
+        // nameOfThereFriends[0] = 6
         nameOfThereFriends = newListOfFriendNames;
     }
 
@@ -121,6 +128,14 @@ try {
 } catch {
     console.log('[ ✓ ] factory function: should throw Error when the validation is not correct')
 }
-
+console.log('\n')
 
 // Stil need to find out how to protect against adjusting the the argument so that a class or function can not adjust the outside world
+
+dog.changeSound(dogSound)
+cat.changeSound(catSound)
+dog.getSound = 'DifferentSound'
+cat.getSound = 'DifferentSound'
+console.log(dog.getSound === 'DifferentSound' ? '[ x ]' : '[ ✓ ]', 'class: private variable should not be changed outside of scope', dog.getSound())
+console.log(dog.getSound === 'DifferentSound'  ? '[ x ]' : '[ ✓ ]', 'factory function: private variable should not be changed outside of scope', cat.getSound())
+console.log('\n')
